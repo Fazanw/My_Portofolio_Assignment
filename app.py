@@ -24,20 +24,27 @@ visitor_stats = {
     "page_views": defaultdict(int)
 }
 
+
 @app.route("/")
 def index():
     track_visitor("/")
     logger.info("Home page visited from %s", request.remote_addr)
     return render_template("index.html")
 
+
 @app.route("/health")
 def health():
-    return jsonify({"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()})
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
+
 
 @app.route("/admin")
 def admin_dashboard():
     """Admin dashboard page"""
     return render_template("admin.html")
+
 
 @app.route("/admin/stats")
 def admin_stats():
@@ -49,12 +56,12 @@ def admin_stats():
         "recent_visits": list(visitor_stats["recent_visits"])[-20:]  # Last 20
     })
 
+
 def track_visitor(page):
     """Track visitor activity"""
     ip = request.remote_addr
     user_agent = request.headers.get("User-Agent", "Unknown")
     timestamp = datetime.now(timezone.utc).isoformat()
-    
     visitor_stats["total_visits"] += 1
     visitor_stats["unique_visitors"].add(ip)
     visitor_stats["page_views"][page] += 1
