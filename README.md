@@ -65,6 +65,16 @@ Push to main
 
 Each stage only runs if the previous one passes. Deploy only triggers on `main` branch.
 
+### Required GitHub Secrets
+
+Go to your repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**:
+
+| Secret | Description | How to Get |
+|---|---|---|
+| `RENDER_DEPLOY_HOOK` | Render deploy trigger URL | Render Dashboard → your service → Settings → Deploy Hook |
+
+> ⚠️ Never hardcode the Deploy Hook URL in any file. Always use GitHub Secrets.
+
 ---
 
 ## ☁️ Deployment (Render.com)
