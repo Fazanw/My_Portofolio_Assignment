@@ -1,0 +1,21 @@
+name: Keep-Alive Ping
+
+on:
+  schedule:
+    - cron: "*/14 * * * *"  # Every 14 minutes
+  workflow_dispatch:         # Allow manual trigger
+
+jobs:
+  ping:
+    name: Ping Render App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://portfolio-faza.onrender.com/health)
+          echo "HTTP Status: $STATUS"
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ App is alive!"
+          else
+            echo "⚠️ App returned status $STATUS"
+          fi

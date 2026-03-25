@@ -37,7 +37,8 @@ Personal portfolio website for **Faza Nur Wafirudin**, AWS Certified Cloud Pract
 ├── .gitignore
 └── .github/
     └── workflows/
-        └── ci-cd.yml             # CI/CD pipeline
+        ├── ci-cd.yml             # CI/CD pipeline
+        └── keep-alive.yml        # Keep-alive ping every 14 minutes
 ```
 
 ---
@@ -96,9 +97,16 @@ Every push to `main` triggers an automatic redeploy.
 
 ### Keep-Alive (Prevent Free Tier Sleep)
 
-Free tier sleeps after 15 minutes of inactivity. To prevent this:
+Free tier sleeps after 15 minutes of inactivity. Prevented using a **GitHub Actions** scheduled workflow that pings the app every 14 minutes.
 
-This project includes a GitHub Action (`.github/workflows/keep_alive.yml`) that automatically pings the `/health` endpoint every 10 minutes to ensure the application stays active.
+| Field | Value |
+|---|---|
+| File | `.github/workflows/keep-alive.yml` |
+| Schedule | Every 14 minutes (`*/14 * * * *`) |
+| Endpoint | `https://portfolio-faza.onrender.com/health` |
+| Method | `GET` |
+
+The `/health` endpoint returns `{"status": "healthy"}` — lightweight and perfect for keep-alive pings.
 
 ---
 
