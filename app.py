@@ -36,7 +36,7 @@ PAGE_VIEWS = Counter(
 visitor_stats = {
     "total_visits": 0,
     "unique_visitors": set(),
-    "recent_visits": deque(maxlen=100),  # Last 100 visits
+    "recent_visits": deque(maxlen=100),
     "page_views": defaultdict(int)
 }
 
@@ -56,19 +56,32 @@ def health():
     })
 
 
+@app.route("/admin")
+def admin_dashboard():
+    """Admin dashboard page"""
+    return render_template("admin.html")
+
+
+@app.route("/admin/stats")
+def admin_stats():
+    """Visitor statistics JSON API"""
+    return jsonify({
+        "total_visits": visitor_stats["total_visits"],
+        "unique_visitors": len(visitor_stats["unique_visitors"]),
+        "page_views": dict(visitor_stats["page_views"]),
+        "recent_visits": list(visitor_stats["recent_visits"])[-20:]
+    })
+
+
 @app.route("/admin/metrics-data")
 def metrics_data():
-    """Parse Prometheus metrics and return as JSON for charts"""
+    """Chart data JSON API"""
     history = list(visitor_stats["recent_visits"])
-
-    # Build visits per minute from recent visits
     visits_by_minute = defaultdict(int)
     for v in history:
-        minute = v["timestamp"][:16]  # YYYY-MM-DDTHH:MM
+        minute = v["timestamp"][:16]
         visits_by_minute[minute] += 1
-
     sorted_minutes = sorted(visits_by_minute.items())[-20:]
-
     return jsonify({
         "visits_timeline": {
             "labels": [m[0] for m in sorted_minutes],
@@ -80,21 +93,6 @@ def metrics_data():
         },
         "total_visits": visitor_stats["total_visits"],
         "unique_visitors": len(visitor_stats["unique_visitors"])
-    })
-
-
-    """Admin dashboard page"""
-    return render_template("admin.html")
-
-
-@app.route("/admin/stats")
-def admin_stats():
-    """Admin dashboard for visitor statistics"""
-    return jsonify({
-        "total_visits": visitor_stats["total_visits"],
-        "unique_visitors": len(visitor_stats["unique_visitors"]),
-        "page_views": dict(visitor_stats["page_views"]),
-        "recent_visits": list(visitor_stats["recent_visits"])[-20:]  # Last 20
     })
 
 
@@ -112,7 +110,6 @@ def track_visitor(page):
         "timestamp": timestamp,
         "user_agent": user_agent[:50]
     })
-    # Update Prometheus metrics
     VISITOR_TOTAL.inc()
     UNIQUE_VISITORS.set(len(visitor_stats["unique_visitors"]))
     PAGE_VIEWS.labels(page=page).inc()

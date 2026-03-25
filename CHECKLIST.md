@@ -1,7 +1,6 @@
 # ✅ Capstone Project - Technical Criteria Checklist
 
-**Project:** Portfolio Website - Faza Nur Wafirudin  
-**Date:** 2024  
+**Project:** Portfolio Website - Faza Nur Wafirudin
 **Deployment:** Render.com (Free Tier)
 
 ---
@@ -10,347 +9,158 @@
 
 | Aspek | Status | Keterangan |
 |---|:---:|---|
-| 🔧 CI/CD Pipeline | ✅ | GitHub Actions: build → test → deploy |
+| 🔧 CI/CD Pipeline | ✅ | GitHub Actions: lint → test → security → deploy |
 | ☁️ Deployment | ✅ | Deployed to Render.com (cloud platform) |
-| 🔐 Keamanan | ✅ | Environment variables, non-root container, .gitignore |
-| 📈 Monitoring | ✅ | Logging + Prometheus metrics + Admin dashboard |
+| 🔐 Keamanan | ✅ | Environment variables, non-root container, .gitignore, input sanitization |
+| 📈 Monitoring | ✅ | Logging + Prometheus metrics + Live Chart.js dashboard |
 | 🚀 Scaling | ✅ | Gunicorn workers + Render scaling options |
-| 📚 Dokumentasi | ✅ | Complete README with setup instructions |
+| 📚 Dokumentasi | ✅ | Complete README, CHECKLIST, SUMMARY |
 
 ---
 
 ## 🔧 1. CI/CD Pipeline ✅
 
-### Implementation:
-- **File:** `.github/workflows/ci-cd.yml`
-- **Trigger:** Every push to `main` branch
-- **Stages:**
-  1. **Build & Test** - Install dependencies, run pytest, build Docker image
-  2. **Deploy** - Render auto-deploys from GitHub on success
+**File:** `.github/workflows/ci-cd.yml`
+**Trigger:** Every push to `main` branch
 
-### Evidence:
-```yaml
-jobs:
-  test:
-    - Install Python 3.12
-    - Install dependencies from requirements.txt
-    - Run pytest test_app.py -v
-    - Build Docker image for validation
-  
-  deploy-ready:
-    - Notify deployment ready
-    - Render auto-deploys from main branch
+```
+Push to main
+    │
+    ▼
+[1] Lint ──── flake8 app.py --max-line-length=120
+    │
+    ▼
+[2] Test ──── pytest (7 tests) + Docker build
+    │
+    ▼
+[3] Security ── bandit -r app.py -ll --skip B104
+    │
+    ▼
+[4] Deploy ──── curl Render Deploy Hook
 ```
 
-### How to verify:
-1. Push code to `main` branch
-2. Check GitHub Actions tab → see green checkmark
-3. Render dashboard shows new deployment
+**GitHub Secret Required:**
+- `RENDER_DEPLOY_HOOK` → Render Dashboard → Settings → Deploy Hook
 
 ---
 
 ## ☁️ 2. Cloud Deployment ✅
 
-### Platform: **Render.com**
-- **Type:** Web Service (Docker)
-- **Region:** Singapore (Southeast Asia)
-- **Tier:** Free (no credit card required)
-- **URL:** https://porto-faza.onrender.com
+**Platform:** Render.com
+**Region:** Singapore
+**Tier:** Free (no credit card)
+**URL:** https://porto-faza.onrender.com
 
-### Deployment Configuration:
-```
-Runtime: Docker
-Branch: main
-Auto-deploy: Enabled
-Environment Variables:
-  - FLASK_ENV=production
-  - PORT=5000
-```
-
-### Features:
-- ✅ Automatic HTTPS/SSL certificate
-- ✅ Auto-deploy on git push
-- ✅ Health check endpoint: `/health`
-- ✅ Zero-downtime deployments
-
-### Keep-Alive Setup:
-- **Service:** GitHub Actions (Automated)
-- **URL:** https://porto-faza.onrender.com/health
-- **Schedule:** Every 10 minutes
-- **Purpose:** Prevent free tier sleep
+| Feature | Status |
+|---|---|
+| Auto HTTPS/SSL | ✅ |
+| Deploy from GitHub | ✅ |
+| Health check endpoint | ✅ `/health` |
+| Keep-alive (GitHub Actions) | ✅ every 14 min |
+| Auto-deploy disabled on Render | ✅ CI/CD controls deploy |
 
 ---
 
 ## 🔐 3. Security Measures ✅
 
-### Implemented Security:
-
-#### a) No Hardcoded Secrets ✅
-```python
-# app.py
-port = int(os.environ.get("PORT", 5000))
-debug = os.environ.get("FLASK_ENV") == "development"
-```
-All sensitive data via environment variables.
-
-#### b) Non-Root Container ✅
-```dockerfile
-# Dockerfile
-RUN useradd -m appuser && chown -R appuser /app
-USER appuser
-```
-Container runs as unprivileged user `appuser`.
-
-#### c) .gitignore Protection ✅
-```
-.env
-__pycache__/
-*.pyc
-grafana_data/
-cv_text.txt
-```
-Sensitive files excluded from version control.
-
-#### d) Input Validation ✅
-```python
-# All user inputs sanitized
-ip = request.remote_addr
-user_agent = request.headers.get("User-Agent", "Unknown")[:50]
-```
+| # | Measure | Implementation |
+|---|---|---|
+| 1 | No hardcoded secrets | All credentials via environment variables |
+| 2 | Non-root container | Docker runs as `appuser` |
+| 3 | .gitignore protection | `.env`, `*.pdf` excluded from git |
+| 4 | Input sanitization | User inputs truncated to 50 chars |
 
 ---
 
 ## 📈 4. Monitoring & Logging ✅
 
-### a) Application Logging ✅
+### Application Logging
 ```python
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger.info("Home page visited from %s", request.remote_addr)
 ```
 
-**Log Output Example:**
-```
-2024-01-15 10:30:45 INFO Home page visited from 103.123.45.67
-2024-01-15 10:31:12 INFO Home page visited from 192.168.1.100
-```
+### Live Monitoring Dashboard
+- **URL:** `https://porto-faza.onrender.com/admin`
+- **Tech:** Chart.js (no external tools)
+- **Refresh:** Every 15 seconds
+- **Panels:** Total visits, unique visitors, traffic chart, page views doughnut, recent visits table
 
-### b) Prometheus Metrics ✅
-**Endpoint:** `/metrics`
+### Prometheus Metrics
+- **URL:** `https://porto-faza.onrender.com/metrics`
+- **Custom metrics:**
+  - `portfolio_visitors_total`
+  - `portfolio_unique_visitors`
+  - `portfolio_page_views_total{page}`
+  - Flask HTTP request count, latency, status codes
 
-**Metrics Tracked:**
-- HTTP request count by endpoint
-- Request latency/duration
-- Response status codes (200, 404, 500)
-- Active requests
-
-**Access:** `https://porto-faza.onrender.com/metrics`
-
-### c) Visitor Analytics Dashboard ✅
-**Endpoint:** `/admin`
-
-**Features:**
-- Total visits counter
-- Unique visitors (by IP)
-- Page views breakdown
-- Recent 20 visits with timestamp, IP, user agent
-- Auto-refresh every 30 seconds
-
-**Access:** `https://porto-faza.onrender.com/admin`
-
-**Screenshot locations:**
-```
-/admin          → Visual dashboard with cards
-/admin/stats    → JSON API endpoint
-/metrics        → Prometheus metrics
-```
-
-### d) Local Monitoring Stack (Optional) ✅
-```bash
-docker compose up
-```
-- **Prometheus:** http://localhost:9090
-- **Grafana:** http://localhost:3000
-- **Dashboard:** Import ID 11159 (Flask Monitoring)
+### API Endpoints
+| Endpoint | Description |
+|---|---|
+| `/admin` | Live visual dashboard |
+| `/admin/stats` | JSON visitor stats |
+| `/admin/metrics-data` | JSON chart data |
+| `/metrics` | Prometheus metrics |
+| `/health` | Health check |
 
 ---
 
-## 🚀 5. Scaling Configuration ✅
+## 🚀 5. Scaling ✅
 
-### a) Horizontal Scaling (Gunicorn Workers) ✅
+### Gunicorn Workers (Current: 2)
 ```dockerfile
-# Dockerfile
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "app:app"]
 ```
 
-**Current:** 2 workers  
-**Scalable to:** 4-8 workers (adjust based on CPU cores)
-
-**How to scale:**
-```dockerfile
-# Change workers count
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "app:app"]
-```
-
-### b) Render Platform Scaling ✅
-
-#### Free Tier (Current):
-- 512 MB RAM
-- 0.1 CPU
-- Sleeps after 15 min inactivity
-
-#### Upgrade Options:
-| Tier | Price | RAM | CPU | Sleep |
+### Render Tier Options
+| Tier | RAM | CPU | Cost | Sleep |
 |---|---|---|---|---|
-| Starter | $7/mo | 512 MB | 0.5 | No |
-| Standard | $25/mo | 2 GB | 1.0 | No |
-| Pro | $85/mo | 4 GB | 2.0 | No |
-
-**Auto-scaling:** Available on Standard tier and above
-
-### c) Performance Optimization ✅
-```python
-# In-memory caching for visitor stats
-visitor_stats = {
-    "total_visits": 0,
-    "unique_visitors": set(),
-    "recent_visits": deque(maxlen=100)
-}
-```
+| Free | 512 MB | 0.1 | $0 | Yes |
+| Starter | 512 MB | 0.5 | $7/mo | No |
+| Standard | 2 GB | 1.0 | $25/mo | No |
 
 ---
 
 ## 📚 6. Documentation ✅
 
-### Files:
-1. **README.md** - Complete project documentation
-2. **CHECKLIST.md** - This technical criteria checklist
-3. **.env.example** - Environment variable template
-4. **Inline code comments** - All functions documented
-
-### README.md Contents:
-- ✅ Project overview with live URL
-- ✅ Tech stack table
-- ✅ Project structure tree
-- ✅ CI/CD pipeline diagram
-- ✅ Deployment instructions (Render)
-- ✅ Local development setup
-- ✅ Monitoring setup (Prometheus + Grafana)
-- ✅ Security measures table
-- ✅ Testing instructions
-- ✅ Scaling options
-- ✅ Contact information
-
-### Code Documentation:
-```python
-def track_visitor(page):
-    """Track visitor activity"""
-    # Clear inline comments explaining logic
-```
+| File | Description |
+|---|---|
+| `README.md` | Full project documentation |
+| `CHECKLIST.md` | Technical criteria verification |
+| `SUMMARY.md` | Presentation-ready summary |
+| `.env.example` | Environment variable template |
 
 ---
 
-## 🎯 Project Highlights
+## 🧪 Tests (7 passing)
 
-### Technical Stack:
-- **Backend:** Python 3.12 + Flask 3.1.0
-- **Frontend:** HTML5 + CSS3 (Glassmorphism design)
-- **Container:** Docker + Gunicorn
-- **CI/CD:** GitHub Actions
-- **Monitoring:** Prometheus + Custom Analytics
-- **Deployment:** Render.com (Cloud PaaS)
-
-### Key Features:
-1. ✅ Fully automated CI/CD pipeline
-2. ✅ Zero-cost cloud deployment
-3. ✅ Real-time visitor analytics
-4. ✅ Prometheus metrics integration
-5. ✅ Security-hardened container
-6. ✅ Responsive mobile-first design
-7. ✅ Accessibility-compliant (color-blind friendly)
-
----
-
-## 📊 Testing Evidence
-
-### Unit Tests:
 ```bash
 $ pytest test_app.py -v
 
 test_app.py::test_health PASSED
+test_app.py::test_health_has_timestamp PASSED
 test_app.py::test_index PASSED
+test_app.py::test_admin_dashboard PASSED
+test_app.py::test_admin_stats PASSED
+test_app.py::test_visitor_tracking PASSED
+test_app.py::test_metrics PASSED
 
-====== 2 passed in 0.15s ======
+====== 7 passed ======
 ```
 
-### Endpoints:
-- ✅ `GET /` → 200 (Homepage)
-- ✅ `GET /health` → 200 (Health check)
-- ✅ `GET /metrics` → 200 (Prometheus metrics)
-- ✅ `GET /admin` → 200 (Analytics dashboard)
-- ✅ `GET /admin/stats` → 200 (JSON API)
+---
+
+## 🔗 Live URLs
+
+| Resource | URL |
+|---|---|
+| Portfolio | https://porto-faza.onrender.com |
+| Monitoring Dashboard | https://porto-faza.onrender.com/admin |
+| Prometheus Metrics | https://porto-faza.onrender.com/metrics |
+| Health Check | https://porto-faza.onrender.com/health |
+| GitHub (Assignment) | https://github.com/Fazanw/My_Portofolio_Assignment |
 
 ---
 
-## 🚀 Deployment Verification
-
-### Live URLs:
-- **Production:** https://porto-faza.onrender.com
-- **Health Check:** https://porto-faza.onrender.com/health
-- **Metrics:** https://porto-faza.onrender.com/metrics
-- **Admin Dashboard:** https://porto-faza.onrender.com/admin
-
-### GitHub Repository:
-- **URL:** https://github.com/Fazanw/My_Portofolio_Assignment
-- **Status:** Public
-- **CI/CD Status:** ✅ Passing
-- **Last Deploy:** Auto-deploy on push to main
-
----
-
-## 📝 Submission Checklist
-
-- [x] CI/CD pipeline configured and working
-- [x] Deployed to cloud platform (Render.com)
-- [x] Security measures implemented (3+ measures)
-- [x] Monitoring dashboard accessible
-- [x] Logging implemented
-- [x] Scaling configuration documented
-- [x] README.md complete and detailed
-- [x] All tests passing
-- [x] Live URL accessible
-- [x] GitHub repository public
-
----
-
-## 🎓 Learning Outcomes
-
-### Skills Demonstrated:
-1. ✅ CI/CD pipeline design and implementation
-2. ✅ Docker containerization
-3. ✅ Cloud deployment (PaaS)
-4. ✅ Application monitoring and observability
-5. ✅ Security best practices
-6. ✅ Infrastructure as Code
-7. ✅ Git workflow and version control
-8. ✅ Technical documentation
-
----
-
-## 📞 Contact
-
-**Faza Nur Wafirudin**  
-AWS Certified Cloud Practitioner | OCI Architect Associate
-
-- 📧 fazanurwafirudin@gmail.com
-- 💼 [linkedin.com/in/fazanurw](https://www.linkedin.com/in/fazanurw)
-- 🐙 [github.com/Fazanw](https://github.com/Fazanw)
-- 🌐 [porto-faza.onrender.com](https://porto-faza.onrender.com)
-
----
-
-**Status:** ✅ ALL CRITERIA COMPLETED  
-**Date:** January 2024  
+**Status:** ✅ ALL CRITERIA COMPLETED
 **Version:** 1.0.0

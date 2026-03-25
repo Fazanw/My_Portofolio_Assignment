@@ -12,10 +12,11 @@ Personal portfolio website for **Faza Nur Wafirudin**, AWS Certified Cloud Pract
 |---|---|
 | Backend | Python / Flask |
 | Frontend | HTML5 / CSS3 (vanilla) |
+| Charts | Chart.js |
 | Container | Docker |
 | CI/CD | GitHub Actions |
 | Deployment | Render.com |
-| Monitoring | Prometheus + Grafana (local) |
+| Monitoring | Prometheus + Live Dashboard (Chart.js) |
 
 ---
 
@@ -25,9 +26,17 @@ Personal portfolio website for **Faza Nur Wafirudin**, AWS Certified Cloud Pract
 .
 ├── app.py                        # Flask app (routes, metrics, logging)
 ├── templates/
-│   └── index.html                # Portfolio single-page frontend
+│   ├── index.html                # Portfolio single-page frontend
+│   └── admin.html                # Live monitoring dashboard
 ├── static/
 │   └── style.css                 # External stylesheet
+├── grafana/
+│   └── provisioning/
+│       ├── datasources/
+│       │   └── prometheus.yml    # Grafana datasource config
+│       └── dashboards/
+│           ├── dashboard.yml     # Dashboard provisioning config
+│           └── portfolio.json    # Grafana dashboard definition
 ├── requirements.txt
 ├── Dockerfile
 ├── docker-compose.yml            # Local dev + Prometheus + Grafana
@@ -101,9 +110,10 @@ Deployed on **Render.com** free tier — no credit card required.
 | `FLASK_ENV` | `production` |
 | `PORT` | `5000` |
 
-5. Click **Create Web Service** — done!
+5. Disable **Auto-Deploy** on Render — let GitHub Actions control deployments
+6. Click **Create Web Service** — done!
 
-Every push to `main` triggers an automatic redeploy.
+Every push to `main` triggers the CI/CD pipeline which deploys automatically on success.
 
 ### Keep-Alive (Prevent Free Tier Sleep)
 
@@ -113,7 +123,7 @@ Free tier sleeps after 15 minutes of inactivity. Prevented using a **GitHub Acti
 |---|---|
 | File | `.github/workflows/keep-alive.yml` |
 | Schedule | Every 14 minutes (`*/14 * * * *`) |
-| Endpoint | `https://portfolio-faza.onrender.com/health` |
+| Endpoint | `https://porto-faza.onrender.com/health` |
 | Method | `GET` |
 
 The `/health` endpoint returns `{"status": "healthy"}` — lightweight and perfect for keep-alive pings.
@@ -124,8 +134,8 @@ The `/health` endpoint returns `{"status": "healthy"}` — lightweight and perfe
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/Fazanw/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/Fazanw/My_Portofolio.git
+cd My_Portofolio
 
 # 2. Copy env file
 cp .env.example .env
@@ -149,27 +159,39 @@ flask run
 
 ## 📈 Monitoring
 
+### Live Monitoring Dashboard (Production)
+- **URL:** `https://porto-faza.onrender.com/admin`
+- Built with **Chart.js** — no external tools needed
+- Auto-refreshes every **15 seconds**
+- Panels:
+  - Total Visits counter
+  - Unique Visitors counter
+  - Page Views counter
+  - App Status (live health check)
+  - Visitor Traffic Over Time (line chart)
+  - Page Views Breakdown (doughnut chart)
+  - Recent 20 visits table (IP, time, page, status, user agent)
+
 ### Application Logging
 - Structured logging with timestamps
 - Tracks all page visits with IP addresses
 - Access logs via Render dashboard or `docker logs`
 
-### Visitor Analytics Dashboard
-- **URL:** `https://porto-faza.onrender.com/admin`
-- Real-time visitor statistics
-- Tracks: total visits, unique visitors, page views
-- Shows last 20 visits with IP, timestamp, user agent
-- Auto-refreshes every 30 seconds
+### Prometheus Metrics
+- **URL:** `https://porto-faza.onrender.com/metrics`
+- Scrapes every 15 seconds
+- Tracks:
+  - `portfolio_visitors_total` — total visitor count
+  - `portfolio_unique_visitors` — unique visitor gauge
+  - `portfolio_page_views_total` — page views by page
+  - HTTP request count, latency, status codes
 
-### Prometheus
-- Scrapes `/metrics` endpoint every 15 seconds
-- Tracks: HTTP request count, latency, status codes
-
-### Grafana Dashboard (Local)
-1. Open `http://localhost:3000`
-2. Login: `admin` / password from `.env`
-3. Add data source → Prometheus → `http://prometheus:9090`
-4. Import dashboard ID **11159** (Flask Monitoring) from Grafana.com
+### Grafana Dashboard (Local Only)
+1. Run `docker compose up --build`
+2. Open `http://localhost:3000`
+3. Login: `admin` / password from `.env`
+4. Datasource auto-configured via provisioning
+5. Dashboard **"Portfolio Monitoring"** loads automatically
 
 ---
 
@@ -180,6 +202,7 @@ flask run
 | No hardcoded secrets | All credentials via environment variables |
 | Non-root container | Dockerfile creates and uses `appuser` |
 | `.gitignore` | `.env` and sensitive files excluded from git |
+| Input sanitization | User inputs validated and truncated |
 
 ---
 
