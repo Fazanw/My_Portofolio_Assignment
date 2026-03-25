@@ -75,5 +75,6 @@ def track_visitor(page):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    debug = os.environ.get("FLASK_ENV") == "development"
-    app.run(host="0.0.0.0", port=port, debug=debug)
+    debug = os.environ.get("FLASK_ENV") == "production"
+    host = os.environ.get("HOST", "0.0.0.0")  # nosec
+    app.run(host=host, port=port, debug=debug)
