@@ -2,7 +2,7 @@
 
 Personal portfolio website for **Faza Nur Wafirudin**, AWS Certified Cloud Practitioner & OCI Architect Associate.
 
-🌐 Live at: [https://portfolio-faza.onrender.com](https://portfolio-faza.onrender.com)
+🌐 Live at: [https://porto-faza.onrender.com](https://porto-faza.onrender.com)
 
 ---
 
