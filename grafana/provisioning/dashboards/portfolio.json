@@ -9,11 +9,12 @@
       "title": "Total Visitors",
       "type": "stat",
       "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "portfolio_visitors_total",
-          "legendFormat": "Total Visitors",
-          "datasource": "Prometheus"
+          "legendFormat": "Total Visitors"
         }
       ],
       "options": {
@@ -23,12 +24,7 @@
       },
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "fixed", "fixedColor": "blue" },
-          "thresholds": {
-            "steps": [
-              { "color": "blue", "value": null }
-            ]
-          }
+          "color": { "mode": "fixed", "fixedColor": "blue" }
         }
       }
     },
@@ -37,11 +33,12 @@
       "title": "Unique Visitors",
       "type": "stat",
       "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "portfolio_unique_visitors",
-          "legendFormat": "Unique Visitors",
-          "datasource": "Prometheus"
+          "legendFormat": "Unique Visitors"
         }
       ],
       "options": {
@@ -59,11 +56,12 @@
       "title": "HTTP Request Rate (per second)",
       "type": "stat",
       "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "rate(flask_http_request_total[1m])",
-          "legendFormat": "Requests/sec",
-          "datasource": "Prometheus"
+          "legendFormat": "Requests/sec"
         }
       ],
       "fieldConfig": {
@@ -78,11 +76,12 @@
       "title": "Average Response Time (ms)",
       "type": "stat",
       "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "rate(flask_http_request_duration_seconds_sum[1m]) / rate(flask_http_request_duration_seconds_count[1m]) * 1000",
-          "legendFormat": "Avg Response Time",
-          "datasource": "Prometheus"
+          "legendFormat": "Avg Response Time"
         }
       ],
       "fieldConfig": {
@@ -97,11 +96,12 @@
       "title": "Visitor Traffic Over Time",
       "type": "timeseries",
       "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "rate(portfolio_visitors_total[5m])",
-          "legendFormat": "Visitors/min",
-          "datasource": "Prometheus"
+          "legendFormat": "Visitors/min"
         }
       ],
       "fieldConfig": {
@@ -116,11 +116,12 @@
       "title": "HTTP Requests by Status Code",
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "rate(flask_http_request_total[1m])",
-          "legendFormat": "{{status}} - {{method}} {{path}}",
-          "datasource": "Prometheus"
+          "legendFormat": "{{status}} - {{method}} {{path}}"
         }
       ],
       "fieldConfig": {
@@ -134,11 +135,12 @@
       "title": "Page Views by Page",
       "type": "bargauge",
       "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "portfolio_page_views_total",
-          "legendFormat": "{{page}}",
-          "datasource": "Prometheus"
+          "legendFormat": "{{page}}"
         }
       ],
       "options": {
@@ -156,21 +158,22 @@
       "title": "Response Time Distribution",
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "histogram_quantile(0.50, rate(flask_http_request_duration_seconds_bucket[5m])) * 1000",
-          "legendFormat": "p50 (ms)",
-          "datasource": "Prometheus"
+          "legendFormat": "p50 (ms)"
         },
         {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "histogram_quantile(0.95, rate(flask_http_request_duration_seconds_bucket[5m])) * 1000",
-          "legendFormat": "p95 (ms)",
-          "datasource": "Prometheus"
+          "legendFormat": "p95 (ms)"
         },
         {
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
           "expr": "histogram_quantile(0.99, rate(flask_http_request_duration_seconds_bucket[5m])) * 1000",
-          "legendFormat": "p99 (ms)",
-          "datasource": "Prometheus"
+          "legendFormat": "p99 (ms)"
         }
       ],
       "fieldConfig": {
@@ -181,6 +184,20 @@
       }
     }
   ],
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "pluginId": "prometheus",
+        "label": "Data Source",
+        "hide": 0,
+        "refresh": 1,
+        "includeAll": false,
+        "multi": false
+      }
+    ]
+  },
   "schemaVersion": 38,
   "version": 1
 }
