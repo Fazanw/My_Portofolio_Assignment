@@ -3,182 +3,347 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visitor Stats - Admin Dashboard</title>
+    <title>Monitoring Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
             min-height: 100vh;
             padding: 2rem;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        h1 {
-            color: white;
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 2rem;
-            text-align: center;
         }
+
+        .header h1 { font-size: 1.5rem; color: #22d3ee; }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: #4ade80;
+        }
+
+        .live-dot {
+            width: 8px; height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .stat-card .label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #22d3ee;
+        }
+
+        .stat-card .sub {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
-        .stat-card {
-            background: white;
+
+        .chart-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
             padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .stat-card h3 {
-            color: #667eea;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-        .stat-card .value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-        .recent-visits {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .recent-visits h2 {
-            color: #667eea;
+
+        .chart-card h3 {
+            font-size: 0.95rem;
+            color: #94a3b8;
             margin-bottom: 1rem;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+
+        .chart-wrap { position: relative; height: 250px; }
+
+        .table-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
         }
+
+        .table-card h3 {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
         th {
-            background: #f7f7f7;
             padding: 0.75rem;
             text-align: left;
-            font-weight: 600;
-            color: #555;
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            border-bottom: 1px solid #334155;
         }
+
         td {
             padding: 0.75rem;
-            border-bottom: 1px solid #eee;
-            color: #333;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
         }
-        tr:hover {
-            background: #f9f9f9;
+
+        tr:hover td { background: #0f172a; }
+
+        .status-ok {
+            display: inline-block;
+            background: #064e3b;
+            color: #4ade80;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
         }
+
         .refresh-btn {
-            background: #667eea;
-            color: white;
+            background: #22d3ee;
+            color: #0f172a;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            display: block;
-            margin-left: auto;
+            font-weight: 600;
+            font-size: 0.85rem;
         }
-        .refresh-btn:hover {
-            background: #5568d3;
-        }
-        .loading {
-            text-align: center;
-            color: white;
-            font-size: 1.2rem;
+
+        .refresh-btn:hover { background: #06b6d4; }
+
+        #last-updated {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+            text-align: right;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📊 Visitor Analytics Dashboard</h1>
-        
-        <button class="refresh-btn" onclick="loadStats()">🔄 Refresh</button>
-        
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Visits</h3>
-                <div class="value" id="total-visits">-</div>
-            </div>
-            <div class="stat-card">
-                <h3>Unique Visitors</h3>
-                <div class="value" id="unique-visitors">-</div>
-            </div>
-            <div class="stat-card">
-                <h3>Homepage Views</h3>
-                <div class="value" id="homepage-views">-</div>
-            </div>
-        </div>
 
-        <div class="recent-visits">
-            <h2>Recent Visits (Last 20)</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>IP Address</th>
-                        <th>Page</th>
-                        <th>User Agent</th>
-                    </tr>
-                </thead>
-                <tbody id="visits-table">
-                    <tr><td colspan="4" class="loading">Loading...</td></tr>
-                </tbody>
-            </table>
+<div class="header">
+    <h1>📊 Portfolio Monitoring Dashboard</h1>
+    <div style="display:flex;align-items:center;gap:1rem;">
+        <div class="live-badge">
+            <div class="live-dot"></div>
+            Live — updates every 15s
+        </div>
+        <button class="refresh-btn" onclick="loadAll()">🔄 Refresh</button>
+    </div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="label">Total Visits</div>
+        <div class="value" id="total-visits">—</div>
+        <div class="sub">All time</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">Unique Visitors</div>
+        <div class="value" id="unique-visitors">—</div>
+        <div class="sub">By IP address</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">Page Views</div>
+        <div class="value" id="page-views">—</div>
+        <div class="sub">Homepage</div>
+    </div>
+    <div class="stat-card">
+        <div class="label">App Status</div>
+        <div class="value" style="font-size:1.5rem;" id="app-status">—</div>
+        <div class="sub" id="app-uptime">Checking...</div>
+    </div>
+</div>
+
+<!-- CHARTS -->
+<div class="charts-grid">
+    <div class="chart-card">
+        <h3>📈 Visitor Traffic Over Time</h3>
+        <div class="chart-wrap">
+            <canvas id="trafficChart"></canvas>
         </div>
     </div>
+    <div class="chart-card">
+        <h3>📄 Page Views Breakdown</h3>
+        <div class="chart-wrap">
+            <canvas id="pageChart"></canvas>
+        </div>
+    </div>
+</div>
 
-    <script>
-        function loadStats() {
-            fetch('/admin/stats')
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('total-visits').textContent = data.total_visits;
-                    document.getElementById('unique-visitors').textContent = data.unique_visitors;
-                    document.getElementById('homepage-views').textContent = data.page_views['/'] || 0;
-                    
-                    const tbody = document.getElementById('visits-table');
-                    tbody.innerHTML = '';
-                    
-                    if (data.recent_visits.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">No visits yet</td></tr>';
-                        return;
-                    }
-                    
-                    data.recent_visits.reverse().forEach(visit => {
-                        const row = document.createElement('tr');
-                        const time = new Date(visit.timestamp).toLocaleString();
-                        row.innerHTML = `
-                            <td>${time}</td>
-                            <td>${visit.ip}</td>
-                            <td>${visit.page}</td>
-                            <td>${visit.user_agent}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                })
-                .catch(err => {
-                    console.error('Error loading stats:', err);
-                    document.getElementById('visits-table').innerHTML = 
-                        '<tr><td colspan="4" style="text-align:center;color:red">Error loading data</td></tr>';
+<!-- RECENT VISITS TABLE -->
+<div class="table-card">
+    <h3>🕐 Recent Visits (Last 20)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>IP Address</th>
+                <th>Page</th>
+                <th>Status</th>
+                <th>User Agent</th>
+            </tr>
+        </thead>
+        <tbody id="visits-table">
+            <tr><td colspan="5" style="text-align:center;color:#64748b">Loading...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="last-updated"></div>
+
+<script>
+    let trafficChart, pageChart;
+
+    function initCharts() {
+        const chartDefaults = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#94a3b8', font: { size: 12 } } } }
+        };
+
+        trafficChart = new Chart(document.getElementById('trafficChart'), {
+            type: 'line',
+            data: { labels: [], datasets: [{
+                label: 'Visits',
+                data: [],
+                borderColor: '#22d3ee',
+                backgroundColor: 'rgba(34,211,238,0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#22d3ee'
+            }]},
+            options: {
+                ...chartDefaults,
+                scales: {
+                    x: { ticks: { color: '#64748b', maxTicksLimit: 8 }, grid: { color: '#1e293b' } },
+                    y: { ticks: { color: '#64748b' }, grid: { color: '#334155' }, beginAtZero: true }
+                }
+            }
+        });
+
+        pageChart = new Chart(document.getElementById('pageChart'), {
+            type: 'doughnut',
+            data: { labels: [], datasets: [{
+                data: [],
+                backgroundColor: ['#22d3ee', '#fbbf24', '#a78bfa', '#4ade80', '#f87171'],
+                borderWidth: 0
+            }]},
+            options: {
+                ...chartDefaults,
+                cutout: '65%'
+            }
+        });
+    }
+
+    function loadAll() {
+        // Load visitor stats
+        fetch('/admin/stats')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('total-visits').textContent = data.total_visits;
+                document.getElementById('unique-visitors').textContent = data.unique_visitors;
+                document.getElementById('page-views').textContent = data.page_views['/'] || 0;
+
+                const tbody = document.getElementById('visits-table');
+                tbody.innerHTML = '';
+                if (data.recent_visits.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#64748b">No visits yet</td></tr>';
+                    return;
+                }
+                [...data.recent_visits].reverse().forEach(v => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${new Date(v.timestamp).toLocaleString()}</td>
+                        <td>${v.ip}</td>
+                        <td>${v.page}</td>
+                        <td><span class="status-ok">200 OK</span></td>
+                        <td>${v.user_agent}</td>
+                    `;
+                    tbody.appendChild(row);
                 });
-        }
+            });
 
-        // Load stats on page load
-        loadStats();
-        
-        // Auto-refresh every 30 seconds
-        setInterval(loadStats, 30000);
-    </script>
+        // Load chart data
+        fetch('/admin/metrics-data')
+            .then(r => r.json())
+            .then(data => {
+                // Update traffic chart
+                trafficChart.data.labels = data.visits_timeline.labels.map(l => l.slice(11));
+                trafficChart.data.datasets[0].data = data.visits_timeline.values;
+                trafficChart.update();
+
+                // Update page views chart
+                pageChart.data.labels = data.page_views.labels.length ? data.page_views.labels : ['No data'];
+                pageChart.data.datasets[0].data = data.page_views.values.length ? data.page_views.values : [1];
+                pageChart.update();
+            });
+
+        // Check health
+        fetch('/health')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('app-status').textContent = '✅ Online';
+                document.getElementById('app-uptime').textContent = `Since ${new Date(data.timestamp).toLocaleTimeString()}`;
+            })
+            .catch(() => {
+                document.getElementById('app-status').textContent = '❌ Offline';
+            });
+
+        document.getElementById('last-updated').textContent =
+            `Last updated: ${new Date().toLocaleTimeString()}`;
+    }
+
+    initCharts();
+    loadAll();
+    setInterval(loadAll, 15000);
+</script>
 </body>
 </html>

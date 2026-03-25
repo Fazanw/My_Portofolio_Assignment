@@ -56,8 +56,33 @@ def health():
     })
 
 
-@app.route("/admin")
-def admin_dashboard():
+@app.route("/admin/metrics-data")
+def metrics_data():
+    """Parse Prometheus metrics and return as JSON for charts"""
+    history = list(visitor_stats["recent_visits"])
+
+    # Build visits per minute from recent visits
+    visits_by_minute = defaultdict(int)
+    for v in history:
+        minute = v["timestamp"][:16]  # YYYY-MM-DDTHH:MM
+        visits_by_minute[minute] += 1
+
+    sorted_minutes = sorted(visits_by_minute.items())[-20:]
+
+    return jsonify({
+        "visits_timeline": {
+            "labels": [m[0] for m in sorted_minutes],
+            "values": [m[1] for m in sorted_minutes]
+        },
+        "page_views": {
+            "labels": list(visitor_stats["page_views"].keys()),
+            "values": list(visitor_stats["page_views"].values())
+        },
+        "total_visits": visitor_stats["total_visits"],
+        "unique_visitors": len(visitor_stats["unique_visitors"])
+    })
+
+
     """Admin dashboard page"""
     return render_template("admin.html")
 
