@@ -55,7 +55,7 @@ jobs:
 - **Type:** Web Service (Docker)
 - **Region:** Singapore (Southeast Asia)
 - **Tier:** Free (no credit card required)
-- **URL:** https://portfolio-faza.onrender.com
+- **URL:** https://porto-faza.onrender.com
 
 ### Deployment Configuration:
 ```
@@ -74,9 +74,9 @@ Environment Variables:
 - ✅ Zero-downtime deployments
 
 ### Keep-Alive Setup:
-- **Service:** Cron-job.org (free)
-- **URL:** https://portfolio-faza.onrender.com/health
-- **Schedule:** Every 14 minutes
+- **Service:** GitHub Actions (Automated)
+- **URL:** https://porto-faza.onrender.com/health
+- **Schedule:** Every 10 minutes
 - **Purpose:** Prevent free tier sleep
 
 ---
@@ -146,7 +146,7 @@ logger.info("Home page visited from %s", request.remote_addr)
 - Response status codes (200, 404, 500)
 - Active requests
 
-**Access:** `https://portfolio-faza.onrender.com/metrics`
+**Access:** `https://porto-faza.onrender.com/metrics`
 
 ### c) Visitor Analytics Dashboard ✅
 **Endpoint:** `/admin`
@@ -158,7 +158,7 @@ logger.info("Home page visited from %s", request.remote_addr)
 - Recent 20 visits with timestamp, IP, user agent
 - Auto-refresh every 30 seconds
 
-**Access:** `https://portfolio-faza.onrender.com/admin`
+**Access:** `https://porto-faza.onrender.com/admin`
 
 **Screenshot locations:**
 ```
@@ -297,13 +297,14 @@ test_app.py::test_index PASSED
 ## 🚀 Deployment Verification
 
 ### Live URLs:
-- **Production:** https://portfolio-faza.onrender.com
-- **Health Check:** https://portfolio-faza.onrender.com/health
-- **Metrics:** https://portfolio-faza.onrender.com/metrics
-- **Admin Dashboard:** https://portfolio-faza.onrender.com/admin
+- **Production:** https://porto-faza.onrender.com
+- **Health Check:** https://porto-faza.onrender.com/health
+- **Metrics:** https://porto-faza.onrender.com/metrics
+- **Admin Dashboard:** https://porto-faza.onrender.com/admin
 
 ### GitHub Repository:
-- **URL:** https://github.com/Fazanw/My_Portofolio
+- **URL:** https://github.com/Fazanw/My_Portofolio_Assignment
+- **Status:** Public
 - **CI/CD Status:** ✅ Passing
 - **Last Deploy:** Auto-deploy on push to main
 
@@ -346,7 +347,7 @@ AWS Certified Cloud Practitioner | OCI Architect Associate
 - 📧 fazanurwafirudin@gmail.com
 - 💼 [linkedin.com/in/fazanurw](https://www.linkedin.com/in/fazanurw)
 - 🐙 [github.com/Fazanw](https://github.com/Fazanw)
-- 🌐 [portfolio-faza.onrender.com](https://portfolio-faza.onrender.com)
+- 🌐 [porto-faza.onrender.com](https://porto-faza.onrender.com)
 
 ---
 

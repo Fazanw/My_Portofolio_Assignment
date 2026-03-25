@@ -5,3 +5,5 @@ __pycache__/
 .pytest_cache/
 grafana_data/
 cv_text.txt
+*.pdf
+SESSION_NOTES.md

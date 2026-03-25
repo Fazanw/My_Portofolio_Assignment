@@ -5,7 +5,7 @@
 
 ## 📊 Project Overview
 
-**Live URL:** https://portfolio-faza.onrender.com  
+**Live URL:** https://porto-faza.onrender.com  
 **GitHub:** https://github.com/Fazanw/My_Portofolio  
 **Type:** Personal Portfolio Website with Full DevOps Pipeline
 
@@ -99,7 +99,7 @@ logging.basicConfig(
 - 🕐 Last 20 visits with details
 - 🔄 Auto-refresh every 30s
 
-**Live Demo:** https://portfolio-faza.onrender.com/admin
+**Live Demo:** https://porto-faza.onrender.com/admin
 
 #### c) Prometheus Metrics ✅
 **URL:** `/metrics`
@@ -110,7 +110,7 @@ logging.basicConfig(
 - Status codes (200, 404, 500)
 - Active requests
 
-**Live Demo:** https://portfolio-faza.onrender.com/metrics
+**Live Demo:** https://porto-faza.onrender.com/metrics
 
 ---
 
@@ -269,19 +269,19 @@ test_app.py::test_index PASSED
 ### Available Dashboards:
 
 1. **Homepage**
-   - URL: https://portfolio-faza.onrender.com
+   - URL: https://porto-faza.onrender.com
    - Shows: Portfolio content
 
 2. **Admin Dashboard**
-   - URL: https://portfolio-faza.onrender.com/admin
+   - URL: https://porto-faza.onrender.com/admin
    - Shows: Visitor statistics with charts
 
 3. **Prometheus Metrics**
-   - URL: https://portfolio-faza.onrender.com/metrics
+   - URL: https://porto-faza.onrender.com/metrics
    - Shows: Raw metrics data
 
 4. **Health Check**
-   - URL: https://portfolio-faza.onrender.com/health
+   - URL: https://porto-faza.onrender.com/health
    - Shows: System status + timestamp
 
 ---
@@ -325,11 +325,11 @@ test_app.py::test_index PASSED
 
 | Resource | URL |
 |---|---|
-| **Live Website** | https://portfolio-faza.onrender.com |
+| **Live Website** | https://porto-faza.onrender.com |
 | **GitHub Repo** | https://github.com/Fazanw/My_Portofolio |
-| **Admin Dashboard** | https://portfolio-faza.onrender.com/admin |
-| **Metrics** | https://portfolio-faza.onrender.com/metrics |
-| **Health Check** | https://portfolio-faza.onrender.com/health |
+| **Admin Dashboard** | https://porto-faza.onrender.com/admin |
+| **Metrics** | https://porto-faza.onrender.com/metrics |
+| **Health Check** | https://porto-faza.onrender.com/health |
 | **LinkedIn** | https://linkedin.com/in/fazanurw |
 
 ---

@@ -10,5 +10,5 @@ scrape_configs:
   - job_name: portfolio_render
     scheme: https
     static_configs:
-      - targets: ["portfolio-faza.onrender.com"]
+      - targets: ["porto-faza.onrender.com"]
     metrics_path: /metrics

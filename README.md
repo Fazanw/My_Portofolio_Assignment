@@ -98,10 +98,7 @@ Every push to `main` triggers an automatic redeploy.
 
 Free tier sleeps after 15 minutes of inactivity. To prevent this:
 
-1. Sign up at https://cron-job.org (free)
-2. Create a cron job:
-   - URL: `https://portfolio-faza.onrender.com/health`
-   - Schedule: every 14 minutes
+This project includes a GitHub Action (`.github/workflows/keep_alive.yml`) that automatically pings the `/health` endpoint every 10 minutes to ensure the application stays active.
 
 ---
 
@@ -140,7 +137,7 @@ flask run
 - Access logs via Render dashboard or `docker logs`
 
 ### Visitor Analytics Dashboard
-- **URL:** `https://portfolio-faza.onrender.com/admin`
+- **URL:** `https://porto-faza.onrender.com/admin`
 - Real-time visitor statistics
 - Tracks: total visits, unique visitors, page views
 - Shows last 20 visits with IP, timestamp, user agent
