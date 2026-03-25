@@ -2,6 +2,7 @@ import os
 import logging
 from flask import Flask, render_template, request, jsonify
 from prometheus_flask_exporter import PrometheusMetrics
+from prometheus_client import Counter, Gauge
 from datetime import datetime, timezone
 from collections import defaultdict, deque
 
@@ -15,6 +16,21 @@ app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 
 metrics.info("app_info", "Portfolio app info", version="1.0.0")
+
+# Custom Prometheus metrics
+VISITOR_TOTAL = Counter(
+    "portfolio_visitors_total",
+    "Total number of visitors"
+)
+UNIQUE_VISITORS = Gauge(
+    "portfolio_unique_visitors",
+    "Number of unique visitors"
+)
+PAGE_VIEWS = Counter(
+    "portfolio_page_views_total",
+    "Total page views per page",
+    ["page"]
+)
 
 # Visitor tracking (in-memory)
 visitor_stats = {
@@ -69,8 +85,12 @@ def track_visitor(page):
         "ip": ip,
         "page": page,
         "timestamp": timestamp,
-        "user_agent": user_agent[:50]  # Truncate long user agents
+        "user_agent": user_agent[:50]
     })
+    # Update Prometheus metrics
+    VISITOR_TOTAL.inc()
+    UNIQUE_VISITORS.set(len(visitor_stats["unique_visitors"]))
+    PAGE_VIEWS.labels(page=page).inc()
 
 
 if __name__ == "__main__":
