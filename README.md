@@ -30,16 +30,9 @@ Personal portfolio website for **Faza Nur Wafirudin**, AWS Certified Cloud Pract
 │   └── admin.html                # Live monitoring dashboard
 ├── static/
 │   └── style.css                 # External stylesheet
-├── grafana/
-│   └── provisioning/
-│       ├── datasources/
-│       │   └── prometheus.yml    # Grafana datasource config
-│       └── dashboards/
-│           ├── dashboard.yml     # Dashboard provisioning config
-│           └── portfolio.json    # Grafana dashboard definition
 ├── requirements.txt
 ├── Dockerfile
-├── docker-compose.yml            # Local dev + Prometheus + Grafana
+├── docker-compose.yml            # Local dev + Prometheus
 ├── prometheus.yml                # Prometheus scrape config
 ├── test_app.py                   # Pytest unit tests
 ├── .env.example                  # Environment variable template
@@ -140,13 +133,12 @@ cd My_Portofolio
 # 2. Copy env file
 cp .env.example .env
 
-# 3. Run with Docker Compose (app + Prometheus + Grafana)
+# 3. Run with Docker Compose (app + Prometheus)
 docker compose up --build
 
 # App:        http://localhost:5000
 # Metrics:    http://localhost:5000/metrics
 # Prometheus: http://localhost:9090
-# Grafana:    http://localhost:3000  (admin / see .env)
 ```
 
 Or run directly with Python:
@@ -185,13 +177,6 @@ flask run
   - `portfolio_unique_visitors` — unique visitor gauge
   - `portfolio_page_views_total` — page views by page
   - HTTP request count, latency, status codes
-
-### Grafana Dashboard (Local Only)
-1. Run `docker compose up --build`
-2. Open `http://localhost:3000`
-3. Login: `admin` / password from `.env`
-4. Datasource auto-configured via provisioning
-5. Dashboard **"Portfolio Monitoring"** loads automatically
 
 ---
 

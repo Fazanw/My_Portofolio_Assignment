@@ -55,8 +55,8 @@ Push to main
 |---|---|
 | Auto HTTPS/SSL | ✅ |
 | Deploy from GitHub | ✅ |
-| Health check endpoint | ✅ `/health` |
-| Keep-alive (GitHub Actions) | ✅ every 14 min |
+| Health check endpoint `/health` | ✅ |
+| Keep-alive via GitHub Actions | ✅ every 14 min |
 | Auto-deploy disabled on Render | ✅ CI/CD controls deploy |
 
 ---
@@ -67,7 +67,7 @@ Push to main
 |---|---|---|
 | 1 | No hardcoded secrets | All credentials via environment variables |
 | 2 | Non-root container | Docker runs as `appuser` |
-| 3 | .gitignore protection | `.env`, `*.pdf` excluded from git |
+| 3 | .gitignore protection | `.env` and sensitive files excluded from git |
 | 4 | Input sanitization | User inputs truncated to 50 chars |
 
 ---
@@ -82,9 +82,9 @@ logger.info("Home page visited from %s", request.remote_addr)
 
 ### Live Monitoring Dashboard
 - **URL:** `https://porto-faza.onrender.com/admin`
-- **Tech:** Chart.js (no external tools)
-- **Refresh:** Every 15 seconds
-- **Panels:** Total visits, unique visitors, traffic chart, page views doughnut, recent visits table
+- **Tech:** Chart.js — runs directly on Render, no external tools
+- **Refresh:** Every 15 seconds automatically
+- **Panels:** Total visits, unique visitors, traffic line chart, page views doughnut, recent visits table
 
 ### Prometheus Metrics
 - **URL:** `https://porto-faza.onrender.com/metrics`

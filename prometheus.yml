@@ -2,13 +2,7 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: portfolio_local
+  - job_name: portfolio_app
     static_configs:
       - targets: ["app:5000"]
-    metrics_path: /metrics
-
-  - job_name: portfolio_render
-    scheme: https
-    static_configs:
-      - targets: ["porto-faza.onrender.com"]
     metrics_path: /metrics

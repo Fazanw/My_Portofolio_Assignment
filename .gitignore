@@ -7,3 +7,5 @@ grafana_data/
 cv_text.txt
 *.pdf
 SESSION_NOTES.md
+screenshots/
+screenshot.py

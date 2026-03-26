@@ -13,8 +13,8 @@
 | CI/CD Pipeline | ✅ | GitHub Actions 4-stage pipeline |
 | Cloud Deployment | ✅ | Render.com (Docker, Singapore) |
 | Security | ✅ | 4 measures implemented |
-| Monitoring | ✅ | Live Chart.js dashboard + Prometheus |
-| Scaling | ✅ | Gunicorn workers + Render tiers |
+| Monitoring | ✅ | Live Chart.js dashboard + Prometheus metrics |
+| Scaling | ✅ | Gunicorn workers + Render tier options |
 | Documentation | ✅ | README + CHECKLIST + SUMMARY |
 
 ---
@@ -28,7 +28,7 @@ Push to main → Lint → Test → Security Scan → Deploy to Render
 - **Lint:** flake8 code quality check
 - **Test:** 7 pytest tests + Docker build validation
 - **Security:** bandit vulnerability scan
-- **Deploy:** Render Deploy Hook (only on main, only if all pass)
+- **Deploy:** Render Deploy Hook — only triggers on main if all stages pass
 
 ---
 
@@ -37,7 +37,7 @@ Push to main → Lint → Test → Security Scan → Deploy to Render
 - **Platform:** Render.com (free, no credit card)
 - **Runtime:** Docker
 - **Region:** Singapore
-- **Keep-Alive:** GitHub Actions pings `/health` every 14 min
+- **Keep-Alive:** GitHub Actions pings `/health` every 14 minutes
 
 ---
 
@@ -46,7 +46,7 @@ Push to main → Lint → Test → Security Scan → Deploy to Render
 1. No hardcoded secrets — environment variables only
 2. Non-root Docker container — runs as `appuser`
 3. `.gitignore` — `.env` and sensitive files excluded
-4. Input sanitization — all user inputs validated
+4. Input sanitization — all user inputs validated and truncated
 
 ---
 
@@ -54,18 +54,14 @@ Push to main → Lint → Test → Security Scan → Deploy to Render
 
 ### Live Dashboard (Production)
 - **URL:** https://porto-faza.onrender.com/admin
-- Built with Chart.js — runs directly on Render
-- Updates every 15 seconds
-- Shows: visitor traffic, page views, recent visits table
+- Built with Chart.js — runs directly on Render, no external tools needed
+- Auto-refreshes every 15 seconds
+- Shows: visitor traffic line chart, page views doughnut, recent visits table
 
 ### Prometheus Metrics
 - **URL:** https://porto-faza.onrender.com/metrics
 - Custom metrics: `portfolio_visitors_total`, `portfolio_unique_visitors`, `portfolio_page_views_total`
 - Flask metrics: request count, latency, status codes
-
-### Local Grafana (Development)
-- `docker compose up` → Grafana at http://localhost:3000
-- Auto-provisioned datasource + dashboard
 
 ---
 
@@ -103,7 +99,7 @@ Push to main → Lint → Test → Security Scan → Deploy to Render
 | `.github/workflows/ci-cd.yml` | 4-stage CI/CD pipeline |
 | `.github/workflows/keep-alive.yml` | Prevent Render sleep |
 | `Dockerfile` | Container config (non-root) |
-| `docker-compose.yml` | Local dev stack |
+| `docker-compose.yml` | Local dev stack with Prometheus |
 | `prometheus.yml` | Metrics scrape config |
 | `test_app.py` | 7 unit tests |
 
