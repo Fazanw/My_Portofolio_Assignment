@@ -73,8 +73,5 @@ jobs:
     needs: security
     if: github.ref == 'refs/heads/main'
     steps:
-      - name: Trigger Render Deploy Hook
-        run: |
-          curl -s -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}" \
-            -o /dev/null -w "HTTP Status: %{http_code}\n"
-          echo "🚀 Deployment triggered on Render"
+      - name: Deployment handled by private repo
+        run: echo "✅ CI/CD passed. Deployment is triggered from the private repository."
